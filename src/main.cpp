@@ -7,7 +7,7 @@
 #include <sys/time.h>
 
 // has to be multiple of 16(m*m) for now
-int const N = 4096 * 4;
+int const N = pow(2, 16);
 int const NUM_RUNS = 1000;
 
 int get_elapsed(struct timeval &start, struct timeval &end) {
@@ -21,7 +21,7 @@ double get_throughput(int elapsed) {
     double total_data =  N * sizeof(float);                   // bytes
     double elapsed_seconds = elapsed * 10e-6;                 // microseconds to seconds
     double bytes_per_sec = total_data / elapsed_seconds;      // B/s
-    double throughput = bytes_per_sec / (1024 * 1024 * 1024); // GiB/s
+    double throughput = bytes_per_sec / (1024 * 1024);        // MiB/s
 
     return throughput;
 }
@@ -87,7 +87,7 @@ int main() {
         throughput = get_throughput(elapsed);
 
         printf("CPP, sequential:               %8d microseconds\n", elapsed);
-        printf("Throughput:                    %8.4f GiB/s\n\n", throughput);
+        printf("Throughput:                    %8.4f MiB/s\n\n", throughput);
     }
 
     // ispc
@@ -106,7 +106,7 @@ int main() {
         throughput = get_throughput(elapsed);
 
         printf("ISPC, sequential:              %8d microseconds\n", elapsed);
-        printf("Throughput:                    %8.4f GiB/s\n\n", throughput);
+        printf("Throughput:                    %8.4f MiB/s\n\n", throughput);
     }
 
     // C
@@ -127,7 +127,7 @@ int main() {
         throughput = get_throughput(elapsed);
 
         printf("C, sequential:                 %8d microseconds\n", elapsed);
-        printf("Throughput:                    %8.4f GiB/s\n\n", throughput);
+        printf("Throughput:                    %8.4f MiB/s\n\n", throughput);
     }
 
     // print_out(cpp_output.begin(), N);

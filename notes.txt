@@ -1,0 +1,90 @@
+2 ^ 16
+CPP, sequential:                    315 microseconds
+Throughput:                     79.3651 MiB/s
+
+ISPC, sequential:                   811 microseconds
+Throughput:                     30.8261 MiB/s
+
+C, sequential:                      662 microseconds
+Throughput:                     37.7644 MiB/s
+
+ISPC sse4, sequential:             2467 microseconds
+Throughput:                     10.1338 MiB/s
+
+2 ^ 15
+CPP, sequential:                    146 microseconds
+Throughput:                     85.6164 MiB/s
+
+ISPC, sequential:                   356 microseconds
+Throughput:                     35.1124 MiB/s
+
+C, sequential:                      309 microseconds
+Throughput:                     40.4531 MiB/s
+
+ISPC sse4, sequential:             1135 microseconds
+
+2 ^ 14
+CPP, sequential:                     64 microseconds
+Throughput:                     97.6562 MiB/s
+
+ISPC, sequential:                   162 microseconds
+Throughput:                     38.5802 MiB/s
+
+C, sequential:                      152 microseconds
+Throughput:                     41.1184 MiB/s
+
+ISPC sse4, sequential:              516 microseconds
+Throughput:                     12.1124 MiB/s
+
+2 ^ 13
+CPP, sequential:                     35 microseconds
+Throughput:                     89.2857 MiB/s
+
+ISPC, sequential:                    72 microseconds
+Throughput:                     43.4028 MiB/s
+
+C, sequential:                       73 microseconds
+Throughput:                     42.8082 MiB/s
+
+ISPC sse4, sequential:              234 microseconds
+Throughput:                     13.3547 MiB/s
+
+2 ^ 12
+CPP, sequential:                     25 microseconds
+Throughput:                     62.5000 MiB/s
+
+ISPC, sequential:                    32 microseconds
+Throughput:                     48.8281 MiB/s
+
+C, sequential:                       34 microseconds
+Throughput:                     45.9559 MiB/s
+
+ISPC sse4, sequential:              105 microseconds
+Throughput:                     14.8810 MiB/s
+
+
+2 ^ 11
+CPP, sequential:                      8 microseconds
+Throughput:                     97.6562 MiB/s
+
+ISPC, sequential:                    28 microseconds
+Throughput:                     27.9018 MiB/s
+
+C, sequential:                       17 microseconds
+Throughput:                     45.9559 MiB/s
+
+ISPC sse4, sequential:               58 microseconds
+Throughput:                     13.4698 MiB/s
+
+2 ^ 10
+CPP, sequential:                      6 microseconds
+Throughput:                     65.1042 MiB/s
+
+ISPC, sequential:                     9 microseconds
+Throughput:                     43.4028 MiB/s
+
+C, sequential:                        8 microseconds
+Throughput:                     48.8281 MiB/s
+
+ISPC sse4, sequential:               20 microseconds
+Throughput:                     19.5312 MiB/s
