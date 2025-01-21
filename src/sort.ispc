@@ -31,16 +31,14 @@ int8 exchange_perm(int w) {
 }
 
 void exchange(float &a, float &b, int w) {
-    foreach(i = 0...programCount) {
-        int8 const perm1 = exchange_perm(w);
-        int8 const perm2 = perm1 + w;
+    int8 const perm1 = exchange_perm(w);
+    int8 const perm2 = perm1 + w;
 
-        float x = shuffle(a, b, perm1);
-        float y = shuffle(a, b, perm2);
+    float x = shuffle(a, b, perm1);
+    float y = shuffle(a, b, perm2);
 
-        a = x;
-        b = y;
-    }
+    a = x;
+    b = y;
 }
 
 int8 final_perm() {
@@ -77,7 +75,7 @@ int8 interleave_rgt() {
     return interleave_lft() + programCount / 2;
 }
 
-void bitonic_merge_kernel(float &a, float &b) {
+void bitonic_merge(float &a, float &b) {
     uniform int const m = programCount;
     uniform int const log_m = ilog2(m);
 
@@ -85,7 +83,7 @@ void bitonic_merge_kernel(float &a, float &b) {
         b = reverse(b);
 
         for (uniform int j = 0; j < log_m; j++) {
-            int w = 1 + log_m - (1 << j);
+            int w = m / (1 << (j + 1));
 
             compare(a, b);
             exchange(a, b, w);
@@ -112,7 +110,7 @@ void merge_lists(uniform float list0[], uniform float list1[],
 
     for (uniform int k = 0; k < n * 2 - m; k += m) {
         foreach(l = 0...m) {
-            bitonic_merge_kernel(a, b);     // get sorted sequence of 2m
+            bitonic_merge(a, b);     // get sorted sequence of 2m
             output[l + k] = a;              // store the lowest m
         }
 
@@ -165,9 +163,10 @@ void merge(uniform float input[], uniform float output[], uniform size_t n) {
         output = temp;
     }
 
-    // can we get rid of this?
     if (iterations % 2 == 0) {
-        memcpy(output, input, n * sizeof(float));
+        uniform float *uniform temp = input;
+        input = output;
+        output = temp;
     }
 }
 
@@ -181,50 +180,19 @@ void transpose_matrix(uniform float data[]) {
     foreach(i = 0...m) {
         for (uniform int j = 0; j < log_m; j++) {
             int w = m / (1 << (j + 1));
-                for (uniform int k = 0; k < m / 2; k++) {
-                    int x;
-                    if (j == 0) {
-                        x = k;
-                    }
-                    else if (j == 1) {
-                        if (k > 2) {
-                            x = 5;
-                        }
-                        else if (k > 1) {
-                            x = k * 2;
-                        } else {
-                            x = k;
-                        }
-                    }
-                    else if (j == 2) {
-                        x = k * 2;
-                    }
 
-                    int y = x + w;
+            for (uniform int k = 0; k < m / 2; k++) {
+                int x = k + k * j;
+                int y = x + w;
 
-                    int ix = i + m * x;
-                    int iy = i + m * y;
+                int i_x = i + x * m;
+                int i_y = i + y * m;
 
-                    // desired results
-                    // k: 0 1 2 3
+                float a = shuffle(data[i_x], data[i_y], inter_lft);
+                float b = shuffle(data[i_x], data[i_y], inter_rgt);
 
-                    // w: 4
-                    // x: 0 8 16 24   k * m
-                    // y: 32 40 48 56 x + m * w
-
-                    // w: 2
-                    // 0 8 32 40      k * m
-                    // 16 24 48 56    x + m * w
-
-                    // w: 1
-                    // 0 16 32 48     k * m * 2
-                    // 8 24 40 56     x * m + w
-
-                    float a = shuffle(data[ix], data[iy], inter_lft);
-                    float b = shuffle(data[ix], data[iy], inter_rgt);
-
-                    data[ix] = a;
-                    data[iy] = b;
+                data[i_x] = a;
+                data[i_y] = b;
             }
         }
     }
@@ -251,17 +219,20 @@ void bitonic_sort(uniform float data[]) {
 export void sort(uniform float input[], uniform float output[], uniform size_t n) {
     uniform int const m = programCount;
 
-    // process in m * m chunks
-    for (uniform int i = 0; i < n; i += m * m) {
-        bitonic_sort(&input[i]);
+    float * uniform temp_buf = uniform new float[n];
+    memcpy(temp_buf, input, n * sizeof(n));
 
-        transpose_matrix(&input[i]);
+    for (uniform int i = 0; i < n; i += m * m) {
+        bitonic_sort(&temp_buf[i]);
+
+        transpose_matrix(&temp_buf[i]);
     }
 
-    // if you want to check the transposed output
-    /*foreach (i = 0...n) {
-        output[i] = input[i];
-    }*/
+    merge(temp_buf, output, n);
 
-    merge(input, output, n);
+    if (ilog2(n / m) % 2 == 0) {
+        memcpy(output, temp_buf, n * sizeof(n));
+    }
+
+    delete[] temp_buf;
 }

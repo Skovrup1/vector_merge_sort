@@ -1,8 +1,8 @@
 CXX = clang++
 ISPC = ispc
 
-CXXFLAGS = -O0 -g -Wall -Wextra -std=c++20
-ISPCFLAGS = -O0 -g --arch=x86-64 --target=avx2
+CXXFLAGS = -O3 -Wall -Wextra -std=c++20
+ISPCFLAGS = -O3 --arch=x86-64 --target=avx2-i32x4
 
 SRC_DIR = src
 BUILD_DIR = build
